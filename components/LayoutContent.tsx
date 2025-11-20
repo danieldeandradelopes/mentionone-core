@@ -14,7 +14,7 @@ export default function LayoutContent({
     <main
       className={`
         min-h-screen transition-all duration-300
-        ${isAdminRoute ? "p-8" : "p-0"}
+        ${isAdminRoute ? "p-8 bg-gray-50" : "p-0"}
         pl-0
         ${isAdminRoute ? "lg:pl-64" : ""}
       `}

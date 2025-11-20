@@ -1,6 +1,6 @@
 // app/api/boxes/route.ts
 import { NextResponse } from "next/server";
-import { getAllBoxes, createBox } from "@/lib/boxes";
+import { getAllBoxes, createBox } from "@/app/lib/boxes";
 
 export async function GET() {
   try {

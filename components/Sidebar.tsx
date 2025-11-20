@@ -12,6 +12,7 @@ import {
   X,
   QrCode,
   LogOut,
+  BarChart,
 } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
 
@@ -49,6 +50,7 @@ export default function Sidebar() {
     { href: "/admin/boxes", label: "Boxes", icon: Box },
     { href: "/admin/qrcodes", label: "QR Codes", icon: QrCode },
     { href: "/admin/feedbacks", label: "Feedback", icon: MessageSquare },
+    { href: "/admin/reports", label: "Relatórios", icon: BarChart },
     { href: "/admin/settings", label: "Configurações", icon: Settings },
   ];
 

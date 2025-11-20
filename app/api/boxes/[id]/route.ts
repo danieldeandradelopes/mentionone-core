@@ -1,6 +1,6 @@
 // app/api/boxes/[id]/route.ts
 import { NextResponse } from "next/server";
-import { getBoxById, updateBox, deleteBox } from "@/lib/boxes";
+import { getBoxById, updateBox, deleteBox } from "@/app/lib/boxes";
 
 interface Params {
   params: Promise<{ id: string }>;
