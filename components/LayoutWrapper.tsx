@@ -23,7 +23,7 @@ export default function LayoutWrapper({
   }
 
   return (
-    <div className="bg-zinc-950 text-zinc-100 pt-16">
+    <div className="pt-16">
       <SidebarProvider>
         <Sidebar />
         <LayoutContent>{children}</LayoutContent>
