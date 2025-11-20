@@ -9,6 +9,7 @@ import {
   Settings,
   Menu,
   X,
+  QrCode,
 } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
 
@@ -16,9 +17,16 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { isOpen: open, setIsOpen: setOpen } = useSidebar();
 
+  // Não exibe a sidebar em rotas que não são administrativas
+  // A sidebar é apenas para usuários logados na área admin
+  if (!pathname.startsWith("/admin")) {
+    return null;
+  }
+
   const links = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/boxes", label: "Boxes", icon: Box },
+    { href: "/admin/qrcodes", label: "QR Codes", icon: QrCode },
     { href: "/admin/feedbacks", label: "Feedback", icon: MessageSquare },
     { href: "/admin/settings", label: "Configurações", icon: Settings },
   ];

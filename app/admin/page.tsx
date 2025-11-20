@@ -1,9 +1,11 @@
 import Feedback from "@/app/entities/Feedback";
 import LogoutButton from "./LogoutButton";
 import FeedbackList from "./FeedbackList";
+import { getBaseUrl } from "@/app/lib/api";
 
 async function getFeedbacks(): Promise<Feedback[]> {
-  const res = await fetch("http://localhost:3000/api/feedback", {
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/feedback`, {
     cache: "no-store",
   });
   if (!res.ok) return [];

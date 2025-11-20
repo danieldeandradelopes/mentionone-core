@@ -1,11 +1,14 @@
 // app/admin/boxes/page.tsx
 import Boxes from "@/app/entities/Boxes";
 import Link from "next/link";
+import { getBaseUrl } from "@/app/lib/api";
 
 async function getBoxes() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/boxes`, {
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/boxes`, {
     cache: "no-store",
   });
+  if (!res.ok) return [];
   return res.json();
 }
 
