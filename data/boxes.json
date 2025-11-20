@@ -13,5 +13,15 @@
     "id": "e741738b-2d2b-466d-9f13-b75529f82ccc",
     "name": "Magazine Tentação - Centro",
     "location": "Presidente Prudente - SP"
+  },
+  {
+    "id": "fff7e32c-3edc-4bac-adc5-91b65d7e1773",
+    "name": "Teste",
+    "location": "Teste"
+  },
+  {
+    "id": "e232bc0d-650b-4ec3-bf08-0cb4929049fc",
+    "name": "Teste1",
+    "location": "Teste1"
   }
 ]
