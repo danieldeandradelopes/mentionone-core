@@ -14,7 +14,17 @@ export async function createSession() {
 }
 
 export async function destroySession() {
-  (await cookies()).delete(SESSION_NAME);
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_NAME);
+  // Garante a remoção definindo o cookie com maxAge 0
+  cookieStore.set({
+    name: SESSION_NAME,
+    value: "",
+    httpOnly: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
 }
 
 export async function isAuthenticated() {

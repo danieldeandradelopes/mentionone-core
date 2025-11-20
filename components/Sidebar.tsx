@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useTransition } from "react";
 import {
   LayoutDashboard,
   Box,
@@ -10,12 +11,32 @@ import {
   Menu,
   X,
   QrCode,
+  LogOut,
 } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isOpen: open, setIsOpen: setOpen } = useSidebar();
+  const [pending, startTransition] = useTransition();
+
+  async function handleLogout() {
+    try {
+      const response = await fetch("/api/logout", { method: "POST" });
+      if (response.ok) {
+        startTransition(() => {
+          router.replace("/login");
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      // Mesmo com erro, redireciona para login
+      startTransition(() => {
+        router.replace("/login");
+      });
+    }
+  }
 
   // Não exibe a sidebar em rotas que não são administrativas
   // A sidebar é apenas para usuários logados na área admin
@@ -104,8 +125,18 @@ export default function Sidebar() {
         </nav>
 
         {/* FOOTER */}
-        <footer className="px-4 py-4 text-xs text-zinc-500 border-t border-zinc-800">
-          © {new Date().getFullYear()} MeuApp
+        <footer className="border-t border-zinc-800">
+          <button
+            onClick={handleLogout}
+            disabled={pending}
+            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition disabled:opacity-50"
+          >
+            <LogOut size={18} className="text-zinc-500" />
+            {pending ? "Saindo..." : "Sair"}
+          </button>
+          <div className="px-4 py-3 text-xs text-zinc-500">
+            © {new Date().getFullYear()} MeuApp
+          </div>
         </footer>
       </aside>
     </>
