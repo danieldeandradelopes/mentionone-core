@@ -7,13 +7,18 @@ import { useCreateBox } from "@/hooks/integration/boxes/mutations";
 export default function NewBoxPage() {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [slug, setSlug] = useState(""); // novo campo opcional
   const createBoxMutation = useCreateBox();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
-      await createBoxMutation.mutateAsync({ name, location });
+      await createBoxMutation.mutateAsync({
+        name,
+        location,
+        slug,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -41,6 +46,23 @@ export default function NewBoxPage() {
           required
           className="w-full border p-3 rounded-lg"
         />
+
+        {/* Campo slug opcional */}
+        <input
+          type="text"
+          placeholder="URL amigável (slug) - opcional"
+          value={slug}
+          onChange={(e) => {
+            // Permitir só letras, números, hífen e underline
+            const limpa = e.target.value.replace(/[^a-zA-Z0-9_-]/g, "");
+            setSlug(limpa);
+          }}
+          className="w-full border p-3 rounded-lg"
+        />
+        <small className="text-xs text-gray-500">
+          Pode usar apenas letras, números, hífen (-) e underline (_). Deixe em
+          branco para gerar automaticamente.
+        </small>
 
         {createBoxMutation.error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
