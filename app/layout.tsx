@@ -1,5 +1,6 @@
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { Providers } from "@/providers/Providers";
 
 export const metadata = {
   title: "Meu App",
@@ -13,7 +14,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <Providers>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </Providers>
       </body>
     </html>
   );

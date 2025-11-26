@@ -1,21 +1,20 @@
 "use client";
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useLogout } from "@/hooks/integration/auth/mutations";
 
 export default function LogoutButton() {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const logoutMutation = useLogout();
 
-  async function logout() {
-    await fetch("/api/logout", { method: "POST" });
-    startTransition(() => {
-      router.replace("/login");
-    });
+  function logout() {
+    logoutMutation.mutate();
   }
 
   return (
-    <button onClick={logout} className="text-red-500" disabled={pending}>
-      {pending ? "Saindo..." : "Sair"}
+    <button
+      onClick={logout}
+      className="text-red-500"
+      disabled={logoutMutation.isPending}
+    >
+      {logoutMutation.isPending ? "Saindo..." : "Sair"}
     </button>
   );
 }

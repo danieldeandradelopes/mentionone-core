@@ -1,10 +1,10 @@
 // app/admin/boxes/page.tsx
 import Link from "next/link";
-import { getBaseUrl } from "@/app/lib/api";
+import { getApiUrl } from "@/app/lib/api";
 import BoxesList from "./BoxesList";
 
 async function getBoxes() {
-  const baseUrl = getBaseUrl();
+  const baseUrl = getApiUrl();
   const res = await fetch(`${baseUrl}/api/boxes`, {
     cache: "no-store",
   });

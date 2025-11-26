@@ -1,9 +1,9 @@
 import Boxes from "@/app/entities/Boxes";
 import Link from "next/link";
-import { getBaseUrl } from "@/app/lib/api";
+import { getApiUrl } from "@/app/lib/api";
 
 async function getBoxes() {
-  const baseUrl = getBaseUrl();
+  const baseUrl = getApiUrl();
   const res = await fetch(`${baseUrl}/api/boxes`, {
     cache: "no-store",
   });

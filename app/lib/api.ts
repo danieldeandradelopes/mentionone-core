@@ -1,14 +1,14 @@
-export function getBaseUrl(): string {
-  // Em produção na Vercel
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+export function getApiUrl(): string {
+  // Variável de ambiente para URL da API
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
   }
 
-  // Variável de ambiente customizada
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL;
+  // Desenvolvimento local - porta padrão da API
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3003";
   }
 
-  // Desenvolvimento local
-  return "http://localhost:3000";
+  // Produção padrão
+  return "https://api.agende7.com";
 }

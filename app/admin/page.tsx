@@ -1,9 +1,9 @@
 import Feedback from "@/app/entities/Feedback";
-import { getBaseUrl } from "@/app/lib/api";
+import { getApiUrl } from "@/app/lib/api";
 import FeedbackList from "./FeedbackList";
 
 async function getFeedbacks(): Promise<Feedback[]> {
-  const baseUrl = getBaseUrl();
+  const baseUrl = getApiUrl();
   const res = await fetch(`${baseUrl}/api/feedback`, {
     cache: "no-store",
   });

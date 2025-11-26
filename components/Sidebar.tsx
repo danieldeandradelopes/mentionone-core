@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Box,
@@ -15,28 +14,15 @@ import {
   BarChart,
 } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useLogout } from "@/hooks/integration/auth/mutations";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { isOpen: open, setIsOpen: setOpen } = useSidebar();
-  const [pending, startTransition] = useTransition();
+  const logoutMutation = useLogout();
 
-  async function handleLogout() {
-    try {
-      const response = await fetch("/api/logout", { method: "POST" });
-      if (response.ok) {
-        startTransition(() => {
-          router.replace("/login");
-        });
-      }
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-      // Mesmo com erro, redireciona para login
-      startTransition(() => {
-        router.replace("/login");
-      });
-    }
+  function handleLogout() {
+    logoutMutation.mutate();
   }
 
   // Não exibe a sidebar em rotas que não são administrativas
@@ -130,11 +116,11 @@ export default function Sidebar() {
         <footer className="border-t border-zinc-800">
           <button
             onClick={handleLogout}
-            disabled={pending}
+            disabled={logoutMutation.isPending}
             className="w-full flex items-center gap-3 px-3 py-3 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition disabled:opacity-50"
           >
             <LogOut size={18} className="text-zinc-500" />
-            {pending ? "Saindo..." : "Sair"}
+            {logoutMutation.isPending ? "Saindo..." : "Sair"}
           </button>
           <div className="px-4 py-3 text-xs text-zinc-500">
             © {new Date().getFullYear()} MeuApp
