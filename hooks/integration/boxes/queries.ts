@@ -1,6 +1,6 @@
 import { api } from "@/services/api";
-import BoxBranding from "@/src/@backend-types/BoxBranding";
-import Boxes from "@/src/@backend-types/Boxes";
+import BoxBranding from "@/@backend-types/BoxBranding";
+import Boxes from "@/@backend-types/Boxes";
 import { useQuery } from "@tanstack/react-query";
 import { BOXES_KEYS } from "./keys";
 

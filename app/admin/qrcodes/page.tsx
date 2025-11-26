@@ -1,18 +1,31 @@
-import Boxes from "@/app/entities/Boxes";
+"use client";
+
+import { useGetBoxes } from "@/hooks/integration/boxes/queries";
+import Boxes from "@/@backend-types/Boxes";
 import Link from "next/link";
-import { getApiUrl } from "@/app/lib/api";
 
-async function getBoxes() {
-  const baseUrl = getApiUrl();
-  const res = await fetch(`${baseUrl}/api/boxes`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  return res.json();
-}
+export default function QRCodesPage() {
+  const { data: boxes = [], isLoading, error } = useGetBoxes();
 
-export default async function QRCodesPage() {
-  const boxes = await getBoxes();
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="text-gray-500 text-center py-8">
+          Carregando caixas...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="text-red-500 text-center py-8">
+          Erro ao carregar caixas. Tente novamente.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">

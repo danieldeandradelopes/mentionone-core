@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import { useCustomLocalStorage } from "./use-custom-local-storage";
 import Authentication, {
   EnterpriseAuthentication,
-} from "@/src/@backend-types/Authentication";
+} from "@/@backend-types/Authentication";
 import { User } from "@/app/lib/auth-actions";
 import { createSessionAction } from "@/app/lib/auth-actions";
 

@@ -1,7 +1,7 @@
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { FEEDBACK_KEYS } from "./keys";
-import Feedback from "@/src/@backend-types/Feedback";
+import Feedback from "@/@backend-types/Feedback";
 
 export const useGetFeedbacks = () => {
   return useQuery<Feedback[], Error>({

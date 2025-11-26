@@ -1,14 +1,14 @@
 import { api } from "@/services/api";
+import Boxes, { BoxesStoreData, BoxesUpdateData } from "@/@backend-types/Boxes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { BOXES_KEYS, CreateBoxData, UpdateBoxData } from "./keys";
-import Boxes from "@/src/@backend-types/Boxes";
+import { BOXES_KEYS } from "./keys";
 
 export const useCreateBox = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  return useMutation<Boxes, Error, CreateBoxData>({
+  return useMutation<Boxes, Error, BoxesStoreData>({
     mutationFn: async (data) => {
       const response = await api.post<Boxes>({
         url: "/boxes",
@@ -34,7 +34,7 @@ export const useUpdateBox = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  return useMutation<Boxes, Error, UpdateBoxData>({
+  return useMutation<Boxes, Error, BoxesUpdateData>({
     mutationFn: async (data) => {
       const { id, ...updateData } = data;
       const response = await api.put<Boxes>({

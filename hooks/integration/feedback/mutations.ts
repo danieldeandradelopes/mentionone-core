@@ -1,7 +1,5 @@
 import { api } from "@/services/api";
-import Feedback, {
-  FeedbackStoreDataWithSlug,
-} from "@/src/@backend-types/Feedback";
+import Feedback, { FeedbackStoreDataWithSlug } from "@/@backend-types/Feedback";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FEEDBACK_KEYS } from "./keys";
 

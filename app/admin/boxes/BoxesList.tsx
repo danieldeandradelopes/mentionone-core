@@ -2,7 +2,7 @@
 
 import { useDeleteBox } from "@/hooks/integration/boxes/mutations";
 import { useGetBoxes } from "@/hooks/integration/boxes/queries";
-import Boxes from "@/src/@backend-types/Boxes";
+import Boxes from "@/@backend-types/Boxes";
 import { Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 export default function BoxesList() {

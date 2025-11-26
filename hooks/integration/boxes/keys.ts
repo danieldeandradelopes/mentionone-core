@@ -1,15 +1,3 @@
-export interface CreateBoxData {
-  name: string;
-  location: string;
-  slug: string;
-}
-
-export interface UpdateBoxData {
-  id: number;
-  name?: string;
-  location?: string;
-}
-
 export const BOXES_KEYS = {
   all: () => ["boxes"] as const,
   lists: () => [...BOXES_KEYS.all(), "list"] as const,

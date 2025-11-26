@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/utils/use-auth";
 import { api } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
 import { AUTH_KEYS, LoginCredentials } from "./keys";
-import Authentication from "@/src/@backend-types/Authentication";
+import Authentication from "@/@backend-types/Authentication";
 import { defaultEnterprise } from "@/hooks/utils/use-auth";
 
 export const useLogin = () => {
