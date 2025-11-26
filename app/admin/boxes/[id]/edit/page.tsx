@@ -1,16 +1,32 @@
-import { getBoxById } from "@/app/lib/boxes";
+"use client";
+
+import { use } from "react";
+import { useGetBox } from "@/hooks/integration/boxes/queries";
 import EditBoxForm from "./form";
 
-export default async function EditBoxPage({
+export default function EditBoxPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const box = await getBoxById(id as string);
+  const { id } = use(params);
+  const boxId = Number(id);
+  const { data: box, isLoading, error } = useGetBox(boxId);
 
-  if (!box) {
-    return <p className="p-6">Caixa não encontrada.</p>;
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-md mx-auto">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (error || !box) {
+    return (
+      <div className="p-6 max-w-md mx-auto">
+        <p className="text-red-500">Caixa não encontrada.</p>
+      </div>
+    );
   }
 
   return (

@@ -2,40 +2,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCreateBox } from "@/hooks/integration/boxes/mutations";
 
 export default function NewBoxPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const createBoxMutation = useCreateBox();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/boxes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, location }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        console.error("Erro ao criar box:", error);
-        alert(
-          `Erro ao criar box: ${
-            error.error || error.details || "Erro desconhecido"
-          }`
-        );
-        return;
-      }
-
-      const box = await res.json();
-      console.log("Box criado com sucesso:", box);
-      router.push("/admin/boxes");
+      await createBoxMutation.mutateAsync({ name, location });
     } catch (error) {
-      console.error("Erro ao criar box:", error);
-      alert("Erro ao criar box. Verifique o console para mais detalhes.");
+      console.error(error);
     }
   }
 
@@ -62,11 +42,18 @@ export default function NewBoxPage() {
           className="w-full border p-3 rounded-lg"
         />
 
+        {createBoxMutation.error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {createBoxMutation.error.message || "Erro ao criar box"}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white p-3 rounded-lg"
+          disabled={createBoxMutation.isPending}
+          className="w-full bg-indigo-600 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Criar
+          {createBoxMutation.isPending ? "Criando..." : "Criar"}
         </button>
       </form>
     </div>

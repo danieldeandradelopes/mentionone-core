@@ -1,20 +1,10 @@
 // app/admin/boxes/page.tsx
+"use client";
+
 import Link from "next/link";
-import { getApiUrl } from "@/app/lib/api";
 import BoxesList from "./BoxesList";
 
-async function getBoxes() {
-  const baseUrl = getApiUrl();
-  const res = await fetch(`${baseUrl}/api/boxes`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  return res.json();
-}
-
-export default async function BoxesPage() {
-  const boxes = await getBoxes();
-
+export default function BoxesPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -27,7 +17,7 @@ export default async function BoxesPage() {
         </Link>
       </div>
 
-      <BoxesList initialBoxes={boxes} />
+      <BoxesList />
     </div>
   );
 }

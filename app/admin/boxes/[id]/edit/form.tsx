@@ -1,29 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Boxes from "@/app/entities/Boxes";
+import {
+  useUpdateBox,
+  useDeleteBox,
+} from "@/hooks/integration/boxes/mutations";
+import Boxes from "@/src/@backend-types/Boxes";
 
 export default function EditBoxForm({ box }: { box: Boxes }) {
-  const router = useRouter();
   const [name, setName] = useState(box.name);
   const [location, setLocation] = useState(box.location);
+  const updateBoxMutation = useUpdateBox();
+  const deleteBoxMutation = useDeleteBox();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    await fetch(`/api/boxes/${box.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, location }),
-    });
-
-    router.push("/admin/boxes");
+    try {
+      await updateBoxMutation.mutateAsync({
+        id: box.id,
+        name,
+        location,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async function handleDelete() {
-    await fetch(`/api/boxes/${box.id}`, { method: "DELETE" });
-    router.push("/admin/boxes");
+    if (!confirm(`Tem certeza que deseja excluir a caixa "${box.name}"?`)) {
+      return;
+    }
+
+    try {
+      await deleteBoxMutation.mutateAsync(box.id);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -44,19 +57,27 @@ export default function EditBoxForm({ box }: { box: Boxes }) {
         required
       />
 
+      {updateBoxMutation.error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {updateBoxMutation.error.message || "Erro ao atualizar box"}
+        </div>
+      )}
+
       <button
         type="submit"
-        className="w-full bg-indigo-600 text-white p-3 rounded-lg"
+        disabled={updateBoxMutation.isPending}
+        className="w-full bg-indigo-600 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Salvar alterações
+        {updateBoxMutation.isPending ? "Salvando..." : "Salvar alterações"}
       </button>
 
       <button
         type="button"
         onClick={handleDelete}
-        className="w-full bg-red-600 text-white p-3 rounded-lg mt-2"
+        disabled={deleteBoxMutation.isPending}
+        className="w-full bg-red-600 text-white p-3 rounded-lg mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Excluir caixa
+        {deleteBoxMutation.isPending ? "Excluindo..." : "Excluir caixa"}
       </button>
     </form>
   );
