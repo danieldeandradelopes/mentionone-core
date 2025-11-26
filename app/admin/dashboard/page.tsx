@@ -1,9 +1,17 @@
 // app/admin/dashboard/page.tsx
 import Feedback from "@/app/entities/Feedback";
 import { getAllBoxes } from "@/app/lib/boxes";
-import { getAllFeedbacks } from "@/lib/feedback";
+import { getAllFeedbacks } from "@/app/lib/feedback";
+import { isAuthenticated } from "@/app/lib/auth-actions";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
+  // Verifica autenticação antes de renderizar
+  const authenticated = await isAuthenticated();
+  if (!authenticated) {
+    redirect("/login");
+  }
+
   const feedbacks = await getAllFeedbacks();
   const boxes = await getAllBoxes();
 

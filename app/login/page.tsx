@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
-import { isAuthenticated } from "@/app/lib/auth";
+import { isAuthenticated } from "@/app/lib/auth-actions";
 import LoginForm from "./LoginForm";
 
 export default async function LoginPage() {

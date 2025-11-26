@@ -2,7 +2,6 @@ import { useAuth } from "@/hooks/utils/use-auth";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { AUTH_KEYS } from "./keys";
-import { User } from "@/app/lib/auth";
 
 export interface UserSession {
   id: number;

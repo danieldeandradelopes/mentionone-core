@@ -1,3 +1,5 @@
+"use server";
+
 import { cookies } from "next/headers";
 
 const SESSION_NAME = "admin_session";
@@ -20,7 +22,8 @@ export interface LoginResponse {
   user: User;
 }
 
-export async function createSession(token: string, user: User) {
+// Server Action para criar sessão a partir do cliente
+export async function createSessionAction(token: string, user: User) {
   const cookieStore = await cookies();
 
   // Salva o token
@@ -56,7 +59,8 @@ export async function createSession(token: string, user: User) {
   });
 }
 
-export async function destroySession() {
+// Server Action para destruir sessão
+export async function destroySessionAction() {
   const cookieStore = await cookies();
 
   cookieStore.delete(SESSION_NAME);
@@ -92,6 +96,7 @@ export async function destroySession() {
   });
 }
 
+// Função para verificar autenticação (usada em Server Components)
 export async function isAuthenticated(): Promise<boolean> {
   const cookie = (await cookies()).get(SESSION_NAME)?.value;
   const token = (await cookies()).get(TOKEN_NAME)?.value;
@@ -100,11 +105,13 @@ export async function isAuthenticated(): Promise<boolean> {
   return cookie === "active" && !!token;
 }
 
+// Função para obter token (usada em Server Components)
 export async function getAuthToken(): Promise<string | null> {
   const token = (await cookies()).get(TOKEN_NAME)?.value;
   return token || null;
 }
 
+// Função para obter usuário (usada em Server Components)
 export async function getUser(): Promise<User | null> {
   const userCookie = (await cookies()).get(USER_NAME)?.value;
   if (!userCookie) return null;

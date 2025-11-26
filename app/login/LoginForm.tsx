@@ -1,23 +1,31 @@
 "use client";
 
 import { useLogin } from "@/hooks/integration/auth/mutations";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const loginMutation = useLogin();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log(email, password);
+    try {
+      await loginMutation.mutateAsync({
+        email,
+        password,
+      });
 
-    await loginMutation.mutateAsync({
-      email,
-      password,
-    });
+      // Redireciona após login bem-sucedido
+      router.push("/admin/dashboard");
+    } catch (error) {
+      // Erro já é tratado pelo hook
+      console.error(error);
+    }
   }
 
   const error = loginMutation.error?.message;

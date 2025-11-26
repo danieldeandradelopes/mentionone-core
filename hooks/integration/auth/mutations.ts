@@ -1,14 +1,12 @@
 import { useAuth } from "@/hooks/utils/use-auth";
 import { api } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { AUTH_KEYS, LoginCredentials } from "./keys";
 import Authentication from "@/src/@backend-types/Authentication";
 import { defaultEnterprise } from "@/hooks/utils/use-auth";
 
 export const useLogin = () => {
   const { login } = useAuth();
-  const router = useRouter();
 
   return useMutation<Authentication, Error, LoginCredentials>({
     mutationFn: async (credentials) => {
@@ -21,8 +19,8 @@ export const useLogin = () => {
         },
       });
 
-      // Salva a sessão usando o hook de auth
-      login(
+      // Salva a sessão usando o hook de auth (localStorage + cookies)
+      await login(
         response.token,
         response.user,
         response.Enterprise || defaultEnterprise
@@ -31,13 +29,6 @@ export const useLogin = () => {
       return response;
     },
     mutationKey: AUTH_KEYS.login({ email: "", password: "" }),
-    onSuccess: () => {
-      // Aguarda um pouco para garantir que o token foi salvo no localStorage
-      setTimeout(() => {
-        router.push("/admin/dashboard");
-        router.refresh();
-      }, 100);
-    },
     onError: (err) => {
       console.error("Erro ao fazer login:", err);
     },

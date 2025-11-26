@@ -3,7 +3,8 @@ import { useCustomLocalStorage } from "./use-custom-local-storage";
 import Authentication, {
   EnterpriseAuthentication,
 } from "@/src/@backend-types/Authentication";
-import { User } from "@/app/lib/auth";
+import { User } from "@/app/lib/auth-actions";
+import { createSessionAction } from "@/app/lib/auth-actions";
 
 const AUTH_STORAGE_KEY = "auth";
 
@@ -39,20 +40,38 @@ export function useAuth() {
     }
   );
 
-  const login = (
+  const login = async (
     token: string,
     user: User,
     Enterprise: EnterpriseAuthentication
   ) => {
+    // Salva no localStorage
     setAuth({ token, user, Enterprise: Enterprise });
+
+    // Cria sessão no servidor (cookies httpOnly) usando Server Action
+    try {
+      await createSessionAction(token, user);
+    } catch (error) {
+      console.error("Erro ao criar sessão no servidor:", error);
+      // Continua mesmo se falhar, pois o localStorage já foi salvo
+    }
   };
 
   const register = (user: User) => {
     setAuth({ ...auth, user });
   };
 
-  const logout = () => {
+  const logout = async () => {
     removeAuth();
+
+    // Remove os cookies usando destroySessionAction
+    try {
+      const { destroySessionAction } = await import("@/app/lib/auth-actions");
+      await destroySessionAction();
+    } catch (error) {
+      console.error("Erro ao destruir sessão:", error);
+    }
+
     navigate.push("/");
   };
 
