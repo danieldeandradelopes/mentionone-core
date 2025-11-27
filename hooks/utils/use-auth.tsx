@@ -14,8 +14,6 @@ export const defaultEnterprise: EnterpriseAuthentication = {
   cover: "",
   address: "",
   description: "",
-  latitude: 0,
-  longitude: 0,
 };
 
 export const defaultUser: User = {
