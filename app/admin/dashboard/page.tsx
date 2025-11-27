@@ -1,11 +1,27 @@
+/* eslint-disable react-hooks/preserve-manual-memoization */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useGetFeedbacks } from "@/hooks/integration/feedback/queries";
 import { useGetBoxes } from "@/hooks/integration/boxes/queries";
 import { useAuth } from "@/hooks/utils/use-auth";
 import Feedback from "@/@backend-types/Feedback";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -45,21 +61,56 @@ export default function DashboardPage() {
     {}
   );
 
-  // Volume por dia (últimos 7 dias)
-  const last7days = Array.from({ length: 7 }).map((_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
+  // Volume por dia (últimos 7 dias) - formatado para gráfico
+  const last7days = useMemo<
+    Array<{ date: string; count: number; fullDate: string }>
+  >(() => {
+    // Prepare an object to count feedbacks per date (yyyy-mm-dd format)
+    const feedbacksByDay: Record<string, number> = {};
+    for (const fb of feedbacks) {
+      if (fb.created_at) {
+        const fbDate = new Date(fb.created_at).toISOString().split("T")[0];
+        feedbacksByDay[fbDate] = (feedbacksByDay[fbDate] || 0) + 1;
+      }
+    }
 
-    const dayStr = date.toISOString().split("T")[0];
+    // Generate last 7 days (oldest first)
+    return Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() - (6 - i));
 
-    const count = feedbacks.filter((fb) => {
-      if (!fb.created_at) return false;
-      const fbDate = new Date(fb.created_at).toISOString().split("T")[0];
-      return fbDate === dayStr;
-    }).length;
+      const dayStr: string = date.toISOString().split("T")[0];
+      const formattedDate: string = date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
 
-    return { date: dayStr, count };
-  });
+      const count: number = feedbacksByDay[dayStr] || 0;
+
+      return { date: formattedDate, count, fullDate: dayStr };
+    });
+  }, [feedbacks]);
+
+  // Dados para gráfico de pizza (categorias)
+  const categoryChartData = useMemo(() => {
+    return Object.entries(feedbacksByCategory).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, [feedbacksByCategory]);
+
+  // Cores para os gráficos
+  const COLORS = [
+    "#6366f1", // indigo
+    "#8b5cf6", // purple
+    "#ec4899", // pink
+    "#f59e0b", // amber
+    "#10b981", // emerald
+    "#3b82f6", // blue
+    "#ef4444", // red
+    "#14b8a6", // teal
+  ];
 
   if (isLoading) {
     return (
@@ -98,44 +149,88 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* GRÁFICO POR CATEGORIA */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Feedbacks por Categoria</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.keys(feedbacksByCategory).map((cat) => (
-            <div
-              key={cat}
-              className="p-4 rounded-xl bg-white shadow text-center"
-            >
-              <p className="text-sm text-gray-500">{cat}</p>
-              <p className="text-2xl font-bold">{feedbacksByCategory[cat]}</p>
+      {/* GRÁFICOS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* GRÁFICO DE LINHA - Últimos 7 dias */}
+        <section className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Feedbacks dos Últimos 7 Dias
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={last7days}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#6366f1"
+                strokeWidth={2}
+                name="Feedbacks"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </section>
+
+        {/* GRÁFICO DE PIZZA - Por Categoria */}
+        <section className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Distribuição por Categoria
+          </h2>
+          {categoryChartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categoryChartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${percent ? (percent * 100).toFixed(0) : 0}%`
+                  }
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {categoryChartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500">
+              Nenhum dado disponível
             </div>
-          ))}
-        </div>
-      </section>
+          )}
+        </section>
+      </div>
 
-      {/* GRÁFICO DE LINHA (texto por enquanto) */}
-      <section>
-        <h2 className="text-lg font-semibold mb-3">Últimos 7 dias</h2>
-
-        <div className="bg-white rounded-xl shadow p-4">
-          <div className="space-y-2">
-            {last7days.map((day) => (
-              <div key={day.date} className="flex items-center gap-4 text-sm">
-                <span className="w-24 text-gray-500">{day.date}</span>
-                <div className="flex-1 h-2 bg-gray-200 rounded">
-                  <div
-                    className="h-2 bg-indigo-600 rounded"
-                    style={{ width: `${day.count * 20}px` }}
-                  ></div>
-                </div>
-                <span className="w-8 text-right font-semibold">
-                  {day.count}
-                </span>
-              </div>
-            ))}
+      {/* GRÁFICO DE BARRAS - Por Categoria */}
+      <section className="bg-white rounded-xl shadow p-6">
+        <h2 className="text-lg font-semibold mb-4">Feedbacks por Categoria</h2>
+        {categoryChartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={categoryChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#6366f1" name="Quantidade" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-[300px] text-gray-500">
+            Nenhum dado disponível
           </div>
-        </div>
+        )}
       </section>
 
       {/* ÚLTIMOS FEEDBACKS */}

@@ -45,7 +45,7 @@ export default function Sidebar() {
       {/* BOTÃO MOBILE — ABRIR */}
       <button
         onClick={() => setOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-zinc-900 p-2 rounded-lg border border-zinc-700 shadow"
+        className="lg:hidden fixed top-4 left-4 z-50 bg-zinc-900 p-2 rounded-lg border border-zinc-700 shadow"
       >
         <Menu size={22} className="text-white" />
       </button>
@@ -54,27 +54,26 @@ export default function Sidebar() {
       {open && (
         <div
           onClick={() => setOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
         />
       )}
 
-      {/* SIDEBAR */}
       <aside
         className={`
           fixed top-0 left-0 h-screen w-64 bg-[#0D0D0D] border-r border-zinc-800
           flex flex-col z-50 transition-transform duration-300
           ${open ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
+          lg:!translate-x-0
         `}
       >
         {/* HEADER */}
         <div className="h-16 border-b border-zinc-800 flex items-center justify-between px-5">
-          <span className="text-xl font-semibold text-white">MeuApp</span>
+          <span className="text-xl font-semibold text-white">MentionOne</span>
 
           {/* Botão fechar mobile */}
           <button
             onClick={() => setOpen(false)}
-            className="md:hidden p-2 rounded-lg hover:bg-zinc-800"
+            className="lg:hidden p-2 rounded-lg hover:bg-zinc-800"
           >
             <X size={20} className="text-zinc-300" />
           </button>
