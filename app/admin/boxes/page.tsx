@@ -6,7 +6,7 @@ import BoxesList from "./BoxesList";
 
 export default function BoxesPage() {
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Caixas</h1>
         <Link

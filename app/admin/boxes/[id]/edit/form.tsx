@@ -244,7 +244,7 @@ export default function EditBoxForm({ box }: { box: Boxes }) {
         <div className="space-y-4 border-t pt-6">
           <h2 className="text-lg font-semibold text-gray-800">Branding</h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cor Primária *

@@ -82,7 +82,7 @@ export default function NewBoxPage() {
     uploadFileMutation.isPending;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto">
       {/* Preview do Logo no topo */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-4">Criar nova caixa</h1>
@@ -202,7 +202,7 @@ export default function NewBoxPage() {
         <div className="space-y-4 border-t pt-6">
           <h2 className="text-lg font-semibold text-gray-800">Branding</h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cor Primária *
