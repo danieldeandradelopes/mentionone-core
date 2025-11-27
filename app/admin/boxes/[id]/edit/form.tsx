@@ -200,16 +200,28 @@ export default function EditBoxForm({ box }: { box: Boxes }) {
       });
 
       // Usar a URL já enviada ou manter a existente
-      const logoUrl: string | undefined = uploadedLogoUrl || branding?.logo_url;
+      const logoUrl: string | undefined = uploadedLogoUrl
+        ? uploadedLogoUrl
+        : branding?.logo_url
+        ? branding.logo_url
+        : undefined;
+
+      console.log("Logo URL sendo enviado:", logoUrl);
+      console.log("uploadedLogoUrl:", uploadedLogoUrl);
+      console.log("branding?.logo_url:", branding?.logo_url);
 
       // Atualizar o branding (cria se não existir)
-      await updateBrandingMutation.mutateAsync({
+      const brandingData = {
         box_id: box.id,
         primary_color: primaryColor,
         secondary_color: secondaryColor,
         logo_url: logoUrl,
         client_name: clientName || undefined,
-      });
+      };
+
+      console.log("Dados do branding sendo enviados:", brandingData);
+
+      await updateBrandingMutation.mutateAsync(brandingData);
 
       notify("Caixa atualizada com sucesso!", "success");
       router.push("/admin/boxes");

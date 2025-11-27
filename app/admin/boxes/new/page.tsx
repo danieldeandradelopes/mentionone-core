@@ -116,16 +116,25 @@ export default function NewBoxPage() {
       } as BoxesStoreData);
 
       // Usar a URL já enviada
-      const logoUrl: string | undefined = uploadedLogoUrl || undefined;
+      const logoUrl: string | undefined = uploadedLogoUrl
+        ? uploadedLogoUrl
+        : undefined;
+
+      console.log("Logo URL sendo enviado:", logoUrl);
+      console.log("uploadedLogoUrl:", uploadedLogoUrl);
 
       // Criar o branding
-      await createBrandingMutation.mutateAsync({
+      const brandingData = {
         box_id: box.id,
         primary_color: primaryColor,
         secondary_color: secondaryColor,
         logo_url: logoUrl,
         client_name: clientName || undefined,
-      });
+      };
+
+      console.log("Dados do branding sendo enviados:", brandingData);
+
+      await createBrandingMutation.mutateAsync(brandingData);
 
       // Criar opções de feedback
       for (const option of feedbackOptions) {
