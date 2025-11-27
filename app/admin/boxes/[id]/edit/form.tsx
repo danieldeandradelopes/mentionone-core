@@ -96,7 +96,7 @@ export default function EditBoxForm({ box }: { box: Boxes }) {
       // Upload automático assim que a imagem for anexada
       try {
         const uploadedFile = await uploadFileMutation.mutateAsync(file);
-        setUploadedLogoUrl(uploadedFile.path);
+        setUploadedLogoUrl(uploadedFile.url);
         notify("Imagem enviada com sucesso!", "success");
       } catch (error) {
         console.error(error);
@@ -206,22 +206,14 @@ export default function EditBoxForm({ box }: { box: Boxes }) {
         ? branding.logo_url
         : undefined;
 
-      console.log("Logo URL sendo enviado:", logoUrl);
-      console.log("uploadedLogoUrl:", uploadedLogoUrl);
-      console.log("branding?.logo_url:", branding?.logo_url);
-
       // Atualizar o branding (cria se não existir)
-      const brandingData = {
+      await updateBrandingMutation.mutateAsync({
         box_id: box.id,
         primary_color: primaryColor,
         secondary_color: secondaryColor,
         logo_url: logoUrl,
         client_name: clientName || undefined,
-      };
-
-      console.log("Dados do branding sendo enviados:", brandingData);
-
-      await updateBrandingMutation.mutateAsync(brandingData);
+      });
 
       notify("Caixa atualizada com sucesso!", "success");
       router.push("/admin/boxes");

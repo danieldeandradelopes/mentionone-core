@@ -1,6 +1,6 @@
 export interface FileDataResponse {
   name: string;
-  path: string;
+  url: string;
 }
 
 export default FileDataResponse;

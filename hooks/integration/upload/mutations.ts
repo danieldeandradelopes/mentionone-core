@@ -43,7 +43,7 @@ export const useUpload = () => {
           throw new Error("Usuário não encontrado");
         }
 
-        register({ ...user, avatar: data.path });
+        register({ ...user, avatar: data.url });
 
         return data;
       } catch (error) {

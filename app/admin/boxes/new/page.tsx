@@ -52,7 +52,7 @@ export default function NewBoxPage() {
       // Upload automático assim que a imagem for anexada
       try {
         const uploadedFile = await uploadFileMutation.mutateAsync(file);
-        setUploadedLogoUrl(uploadedFile.path);
+        setUploadedLogoUrl(uploadedFile.url);
         notify("Imagem enviada com sucesso!", "success");
       } catch (error) {
         console.error(error);
@@ -120,21 +120,14 @@ export default function NewBoxPage() {
         ? uploadedLogoUrl
         : undefined;
 
-      console.log("Logo URL sendo enviado:", logoUrl);
-      console.log("uploadedLogoUrl:", uploadedLogoUrl);
-
       // Criar o branding
-      const brandingData = {
+      await createBrandingMutation.mutateAsync({
         box_id: box.id,
         primary_color: primaryColor,
         secondary_color: secondaryColor,
         logo_url: logoUrl,
         client_name: clientName || undefined,
-      };
-
-      console.log("Dados do branding sendo enviados:", brandingData);
-
-      await createBrandingMutation.mutateAsync(brandingData);
+      });
 
       // Criar opções de feedback
       for (const option of feedbackOptions) {

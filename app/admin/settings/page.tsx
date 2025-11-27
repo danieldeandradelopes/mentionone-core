@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useUpdateEnterprise } from "@/hooks/integration/enterprise/mutations";
 import { useGetEnterpriseSettings } from "@/hooks/integration/enterprise/queries";
+import { useUploadFile } from "@/hooks/integration/upload/upload-file";
 import Enterprise from "@/src/@backend-types/Enterprise";
 import notify from "@/utils/notify";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type EnterpriseFormData = Partial<
@@ -20,6 +21,7 @@ type EnterpriseFormData = Partial<
 export default function SettingsPage() {
   const { data: enterprise, isLoading } = useGetEnterpriseSettings();
   const updateEnterpriseMutation = useUpdateEnterprise();
+  const uploadFileMutation = useUploadFile();
 
   const {
     register,
@@ -37,14 +39,10 @@ export default function SettingsPage() {
     },
   });
 
-  // Estado local apenas para preview da imagem quando o usuário digita
+  // Estados para upload de imagem
+  const [uploadedCoverUrl, setUploadedCoverUrl] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-
-  // Valor inicial do preview baseado no enterprise
-  const initialCoverPreview = useMemo(
-    () => enterprise?.cover || null,
-    [enterprise?.cover]
-  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Atualiza o formulário quando os dados carregarem
   useEffect(() => {
@@ -58,15 +56,51 @@ export default function SettingsPage() {
         timezone: enterprise.timezone || "America/Sao_Paulo",
       };
       reset(formData);
+
+      // Inicializar preview e URL enviada
+      if (enterprise.cover) {
+        // Usar setTimeout para evitar warning do linter
+        setTimeout(() => {
+          setCoverPreview(enterprise.cover!);
+          setUploadedCoverUrl(enterprise.cover!);
+        }, 0);
+      }
     }
   }, [enterprise, reset]);
 
-  // Preview da imagem: usa o valor digitado ou o valor inicial
-  const displayCover = coverPreview || initialCoverPreview;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload automático assim que a imagem for anexada
+      try {
+        const uploadedFile = await uploadFileMutation.mutateAsync(file);
+        setUploadedCoverUrl(uploadedFile.url);
+        notify("Imagem enviada com sucesso!", "success");
+      } catch (error) {
+        console.error(error);
+        notify("Erro ao enviar imagem", "error");
+        // Limpar o preview em caso de erro
+        setCoverPreview(enterprise?.cover || null);
+        setUploadedCoverUrl(null);
+      }
+    }
+  };
 
   const onSubmit = async (data: EnterpriseFormData) => {
     try {
-      await updateEnterpriseMutation.mutateAsync(data);
+      // Usar a URL já enviada ou manter a existente
+      const coverUrl = uploadedCoverUrl || enterprise?.cover || undefined;
+
+      await updateEnterpriseMutation.mutateAsync({
+        ...data,
+        cover: coverUrl,
+      });
       notify("Configurações da empresa atualizadas com sucesso!", "success");
     } catch (error) {
       console.error(error);
@@ -141,40 +175,82 @@ export default function SettingsPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              URL da Imagem de Capa
+              Imagem de Capa
             </label>
-            <input
-              type="url"
-              className="w-full border p-2 rounded"
-              {...register("cover", {
-                onChange: (e) => {
-                  setCoverPreview(e.target.value || null);
-                },
-              })}
-              placeholder="https://exemplo.com/imagem.jpg"
-            />
-            {displayCover && (
-              <div className="mt-2">
-                <Image
-                  src={displayCover}
-                  alt="Preview da capa"
-                  width={100}
-                  height={100}
-                  className="max-w-md h-48 object-cover rounded border"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </div>
-            )}
+            <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              {coverPreview ? (
+                <div className="space-y-4 w-full">
+                  <div className="flex justify-center">
+                    <Image
+                      src={coverPreview}
+                      alt="Preview da capa"
+                      width={300}
+                      height={300}
+                      className="max-w-full h-48 object-contain"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadFileMutation.isPending}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploadFileMutation.isPending
+                      ? "Enviando..."
+                      : "Trocar imagem"}
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center space-y-4">
+                  <div className="text-gray-400 text-sm">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadFileMutation.isPending}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploadFileMutation.isPending
+                      ? "Enviando..."
+                      : "Selecionar imagem"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <Button
             type="submit"
-            disabled={isSubmitting || updateEnterpriseMutation.isPending}
+            disabled={
+              isSubmitting ||
+              updateEnterpriseMutation.isPending ||
+              uploadFileMutation.isPending
+            }
             className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
-            {isSubmitting || updateEnterpriseMutation.isPending
+            {uploadFileMutation.isPending
+              ? "Enviando imagem..."
+              : isSubmitting || updateEnterpriseMutation.isPending
               ? "Salvando..."
               : "Salvar Alterações"}
           </Button>
