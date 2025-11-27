@@ -78,7 +78,7 @@ export default function QrCodePage({
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <Link
         href="/admin/boxes"
         className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
@@ -87,7 +87,7 @@ export default function QrCodePage({
         Voltar para todas as caixas
       </Link>
 
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
         <h1 className="text-2xl font-bold mb-2">QR Code da Box</h1>
         <div className="mb-6">
           <p className="text-lg font-semibold text-gray-800">{box.name}</p>
@@ -106,7 +106,7 @@ export default function QrCodePage({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               URL do QR Code:
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={boxUrl}
@@ -116,7 +116,7 @@ export default function QrCodePage({
               <button
                 onClick={handleCopyUrl}
                 disabled={!boxUrl}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap sm:w-auto w-full"
               >
                 {copied ? (
                   <>

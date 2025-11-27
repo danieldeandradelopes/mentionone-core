@@ -359,7 +359,7 @@ export default function NewBoxPage() {
 
           {/* Adicionar nova opção */}
           <div className="space-y-2">
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 placeholder="Nome da opção (ex: Atendimento, Produto, etc.)"
@@ -380,7 +380,7 @@ export default function NewBoxPage() {
                     e.target.value as "criticism" | "suggestion" | "praise"
                   )
                 }
-                className="border p-3 rounded-lg min-w-[150px]"
+                className="border p-3 rounded-lg sm:min-w-[150px] w-full sm:w-auto"
               >
                 <option value="criticism">Crítica</option>
                 <option value="suggestion">Sugestão</option>
@@ -389,7 +389,7 @@ export default function NewBoxPage() {
               <button
                 type="button"
                 onClick={handleAddOption}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 whitespace-nowrap"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto"
               >
                 <Plus size={18} />
                 Adicionar

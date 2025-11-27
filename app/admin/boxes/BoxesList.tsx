@@ -46,24 +46,24 @@ export default function BoxesList() {
       {boxes.map((box: Boxes) => (
         <div
           key={box.id}
-          className="p-4 border border-gray-200 rounded-xl bg-white flex justify-between items-center hover:shadow-md transition-shadow"
+          className="p-4 border border-gray-200 rounded-xl bg-white flex flex-col md:flex-row md:justify-between md:items-center gap-4 hover:shadow-md transition-shadow"
         >
           <div className="flex-1">
             <p className="font-semibold text-gray-800">{box.name}</p>
             <p className="text-sm text-gray-500">{box.location}</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 md:flex-nowrap">
             <Link
               href={`/admin/boxes/${box.id}/qrcode`}
-              className="text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1"
+              className="text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1 whitespace-nowrap"
             >
               <QrCode size={16} />
               Ver QR Code
             </Link>
             <Link
               href={`/admin/boxes/${box.id}/edit`}
-              className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1"
+              className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 whitespace-nowrap"
             >
               <Edit size={16} />
               Editar
@@ -71,7 +71,7 @@ export default function BoxesList() {
             <button
               onClick={() => handleDelete(box.id, box.name)}
               disabled={deleteBoxMutation.isPending}
-              className="text-red-600 font-medium hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="text-red-600 font-medium hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
             >
               <Trash2 size={16} />
               {deleteBoxMutation.isPending ? "Excluindo..." : "Excluir"}
