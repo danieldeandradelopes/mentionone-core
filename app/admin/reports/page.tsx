@@ -1,52 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Box } from "@/app/lib/boxes";
-import Report from "@/app/entities/Report";
+import { Card } from "@/components/ui/card";
+import { useGetBoxes } from "@/hooks/integration/boxes/queries";
+import {
+  ReportFilters,
+  useGetReport,
+} from "@/hooks/integration/feedback/queries";
+import { useState } from "react";
 
 export default function ReportsPage() {
-  const [boxes, setBoxes] = useState<Box[]>([]);
-  const [filters, setFilters] = useState({
+  const { data: boxes = [], isLoading: boxesLoading } = useGetBoxes();
+  const [localFilters, setLocalFilters] = useState({
     boxId: "",
     startDate: "",
     endDate: "",
     category: "",
   });
+  const [appliedFilters, setAppliedFilters] = useState<ReportFilters>({});
+  const [shouldFetch, setShouldFetch] = useState(false);
 
-  const [report, setReport] = useState<Report | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: report,
+    isLoading: reportLoading,
+    error: reportError,
+  } = useGetReport(appliedFilters, shouldFetch);
 
-  useEffect(() => {
-    async function loadBoxes() {
-      const res = await fetch("/api/boxes");
-      setBoxes(await res.json());
-    }
-    loadBoxes();
-  }, []);
+  const loading = boxesLoading || reportLoading;
+  const error = reportError?.message || null;
 
-  async function loadReport() {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams(
-        Object.entries(filters).filter(([, v]) => v !== "")
-      );
+  function loadReport() {
+    // Remove campos vazios antes de buscar
+    const cleanFilters: ReportFilters = {};
+    if (localFilters.boxId) cleanFilters.boxId = localFilters.boxId;
+    if (localFilters.category) cleanFilters.category = localFilters.category;
+    if (localFilters.startDate) cleanFilters.startDate = localFilters.startDate;
+    if (localFilters.endDate) cleanFilters.endDate = localFilters.endDate;
 
-      const res = await fetch(`/api/reports/feedback?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error("Erro ao carregar relatório");
-      }
-      const data = await res.json();
-      setReport(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido");
-      setReport(null);
-    } finally {
-      setLoading(false);
-    }
+    setAppliedFilters(cleanFilters);
+    setShouldFetch(true);
   }
 
   return (
@@ -59,8 +51,10 @@ export default function ReportsPage() {
           {/* Box */}
           <select
             className="border p-2 rounded"
-            value={filters.boxId}
-            onChange={(e) => setFilters({ ...filters, boxId: e.target.value })}
+            value={localFilters.boxId}
+            onChange={(e) =>
+              setLocalFilters({ ...localFilters, boxId: e.target.value })
+            }
           >
             <option value="">Todas as caixas</option>
             {boxes.map((b) => (
@@ -74,9 +68,12 @@ export default function ReportsPage() {
           <input
             type="date"
             className="border p-2 rounded"
-            value={filters.startDate}
+            value={localFilters.startDate}
             onChange={(e) =>
-              setFilters({ ...filters, startDate: e.target.value })
+              setLocalFilters({
+                ...localFilters,
+                startDate: e.target.value,
+              })
             }
           />
 
@@ -84,9 +81,9 @@ export default function ReportsPage() {
           <input
             type="date"
             className="border p-2 rounded"
-            value={filters.endDate}
+            value={localFilters.endDate}
             onChange={(e) =>
-              setFilters({ ...filters, endDate: e.target.value })
+              setLocalFilters({ ...localFilters, endDate: e.target.value })
             }
           />
 
@@ -95,9 +92,9 @@ export default function ReportsPage() {
             type="text"
             className="border p-2 rounded"
             placeholder="Categoria"
-            value={filters.category}
+            value={localFilters.category}
             onChange={(e) =>
-              setFilters({ ...filters, category: e.target.value })
+              setLocalFilters({ ...localFilters, category: e.target.value })
             }
           />
         </div>
