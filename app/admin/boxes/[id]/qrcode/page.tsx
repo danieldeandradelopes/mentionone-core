@@ -67,11 +67,11 @@ export default function QrCodePage({
           Erro ao carregar informações da caixa. Tente novamente.
         </div>
         <Link
-          href="/admin/qrcodes"
+          href="/admin/boxes"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mt-4"
         >
           <ArrowLeft size={18} />
-          Voltar para QR Codes
+          Voltar para todas as caixas
         </Link>
       </div>
     );
@@ -80,11 +80,11 @@ export default function QrCodePage({
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <Link
-        href="/admin/qrcodes"
+        href="/admin/boxes"
         className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
       >
         <ArrowLeft size={18} />
-        Voltar para QR Codes
+        Voltar para todas as caixas
       </Link>
 
       <div className="bg-white rounded-xl shadow-lg p-8">
